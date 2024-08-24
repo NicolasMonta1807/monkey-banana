@@ -3,28 +3,6 @@ from collections import deque
 # Dimensiones de la rejilla
 FILAS, COLUMNAS = 3, 3
 
-
-# Función para generar los estados sucesores
-def heuristica(estado):
-    posicion_mono, posicion_caja, sobre_caja, posicion_banana, tiene_banana = estado
-    fila_mono, col_mono = posicion_mono
-    fila_caja, col_caja = posicion_caja
-    fila_banana, col_banana = posicion_banana
-    
-    if tiene_banana:
-        return 0
-    
-    # Distancia de Manhattan del mono a la caja
-    distancia_mono_caja = abs(fila_mono - fila_caja) + abs(col_mono - col_caja)
-    
-    # Distancia de Manhattan de la caja a la posición de la banana
-    distancia_caja_banana = abs(fila_caja - fila_banana) + abs(col_caja - col_banana)
-    
-    # Si el mono no está sobre la caja y ya está en la misma posición, debe subirse
-    costo_subirse = 1 if not sobre_caja and (fila_mono, col_mono) == (fila_caja, col_caja) else 0
-    
-    return distancia_mono_caja + distancia_caja_banana + costo_subirse
-
 # Función para generar los estados sucesores
 def obtener_sucesores(estado):
     sucesores = []
@@ -77,7 +55,7 @@ def resolver_problema_mono_banana_bfs(estado_inicial):
         estado_actual, camino = cola.popleft()
 
         # Si ya se alcanzó el objetivo
-        if estado_actual[4]:  # estado_actual[3] es tiene_banana
+        if estado_actual[4]:  # estado_actual[4] es tiene_banana
             print("----------------------------------------")
             print(f"Sucesores analizados: {sucesores_analizados}")
             print("----------------------------------------")
