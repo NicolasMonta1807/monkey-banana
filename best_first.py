@@ -5,9 +5,10 @@ FILAS, COLUMNAS = 3, 3
 
 # Heurística que estima la distancia al objetivo
 def heuristica(estado):
-    posicion_mono, posicion_caja, sobre_caja, tiene_banana = estado
+    posicion_mono, posicion_caja, sobre_caja, posicion_banana, tiene_banana = estado
     fila_mono, col_mono = posicion_mono
     fila_caja, col_caja = posicion_caja
+    fila_banana, col_banana = posicion_banana
     
     if tiene_banana:
         return 0
@@ -15,18 +16,18 @@ def heuristica(estado):
     # Distancia de Manhattan del mono a la caja
     distancia_mono_caja = abs(fila_mono - fila_caja) + abs(col_mono - col_caja)
     
-    # Distancia de Manhattan de la caja a la posición central
-    distancia_caja_centro = abs(fila_caja - 1) + abs(col_caja - 1)
+    # Distancia de Manhattan de la caja a la posición de la banana
+    distancia_caja_banana = abs(fila_caja - fila_banana) + abs(col_caja - col_banana)
     
     # Si el mono no está sobre la caja y ya está en la misma posición, debe subirse
     costo_subirse = 1 if not sobre_caja and (fila_mono, col_mono) == (fila_caja, col_caja) else 0
     
-    return distancia_mono_caja + distancia_caja_centro + costo_subirse
+    return distancia_mono_caja + distancia_caja_banana + costo_subirse
 
 # Función para generar los estados sucesores
 def obtener_sucesores(estado):
     sucesores = []
-    (fila_mono, col_mono), (fila_caja, col_caja), sobre_caja, tiene_banana = estado
+    (fila_mono, col_mono), (fila_caja, col_caja), sobre_caja, (fila_banana, col_banana), tiene_banana = estado
     
     if tiene_banana:
         return sucesores
@@ -39,7 +40,7 @@ def obtener_sucesores(estado):
         nueva_fila_mono = fila_mono + d_fila
         nueva_col_mono = col_mono + d_col
         if 0 <= nueva_fila_mono < FILAS and 0 <= nueva_col_mono < COLUMNAS:
-            sucesores.append(((nueva_fila_mono, nueva_col_mono), (fila_caja, col_caja), sobre_caja, tiene_banana))
+            sucesores.append(((nueva_fila_mono, nueva_col_mono), (fila_caja, col_caja), sobre_caja, (fila_banana, col_banana), tiene_banana))
     
     # Empujar la caja a otra posición (si el mono está en la misma posición que la caja y no está sobre ella)
     if (fila_mono, col_mono) == (fila_caja, col_caja) and not sobre_caja:
@@ -47,15 +48,15 @@ def obtener_sucesores(estado):
             nueva_fila_caja = fila_caja + d_fila
             nueva_col_caja = col_caja + d_col
             if 0 <= nueva_fila_caja < FILAS and 0 <= nueva_col_caja < COLUMNAS:
-                sucesores.append(((fila_mono, col_mono), (nueva_fila_caja, nueva_col_caja), False, tiene_banana))
+                sucesores.append(((fila_mono + d_fila, col_mono + d_col), (nueva_fila_caja, nueva_col_caja), False, (fila_banana, col_banana), tiene_banana))
     
     # Subirse a la caja (si el mono está en la misma posición que la caja y no está sobre ella)
     if (fila_mono, col_mono) == (fila_caja, col_caja) and not sobre_caja:
-        sucesores.append(((fila_mono, col_mono), (fila_caja, col_caja), True, tiene_banana))
+        sucesores.append(((fila_mono, col_mono), (fila_caja, col_caja), True, (fila_banana, col_banana), tiene_banana))
     
-    # Agarrar la banana (si el mono está sobre la caja en la posición central)
-    if sobre_caja and (fila_mono, col_mono) == (1, 1):
-        sucesores.append(((fila_mono, col_mono), (fila_caja, col_caja), sobre_caja, True))
+    # Agarrar la banana (si el mono está sobre la caja en la posición de la banana)
+    if sobre_caja and (fila_mono, col_mono) == (fila_banana, col_banana):
+        sucesores.append(((fila_mono, col_mono), (fila_caja, col_caja), sobre_caja, (fila_banana, col_banana), True))
     
     return sucesores
 
@@ -74,7 +75,7 @@ def resolver_problema_mono_banana_best_first(estado_inicial):
         _, estado_actual, camino = heapq.heappop(cola_prioridad)
         
         # Si ya se alcanzó el objetivo
-        if estado_actual[3]:  # estado_actual[3] es tiene_banana
+        if estado_actual[4]:  # estado_actual[4] es tiene_banana
             return camino + [estado_actual]
         
         if estado_actual not in visitados:
@@ -99,9 +100,8 @@ def resolver_problema_mono_banana_best_first(estado_inicial):
     
     return None  # No se encontró solución
 
-# Ejecutar el algoritmo y mostrar la solución
-# Estado inicial: (posición del mono, posición de la caja, sobre la caja, tiene la banana)
-estado_inicial = ((0, 0), (0, 1), False, False)
+# Estado inicial: (posición del mono, posición de la caja, sobre la caja, posición de la banana, tiene la banana)
+estado_inicial = ((0, 0), (0, 1), False, (1, 1), False)
 solucion = resolver_problema_mono_banana_best_first(estado_inicial)
 if solucion:
     print("Solución encontrada:\n")
