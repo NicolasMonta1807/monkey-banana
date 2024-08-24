@@ -71,11 +71,17 @@ def resolver_problema_mono_banana_best_first(estado_inicial):
     # Conjunto de estados visitados para evitar ciclos
     visitados = set()
     
+    # Contador de sucesores analizados
+    sucesores_analizados = 0
+    
     while cola_prioridad:
         _, estado_actual, camino = heapq.heappop(cola_prioridad)
         
         # Si ya se alcanzó el objetivo
         if estado_actual[4]:  # estado_actual[4] es tiene_banana
+            print("----------------------------------------")
+            print(f"Sucesores analizados: {sucesores_analizados}")
+            print("----------------------------------------")
             return camino + [estado_actual]
         
         if estado_actual not in visitados:
@@ -84,6 +90,8 @@ def resolver_problema_mono_banana_best_first(estado_inicial):
             # Generar sucesores y calcular sus heurísticas
             sucesores_con_heuristica = []
             for sucesor in obtener_sucesores(estado_actual):
+                print("----------------------------------------")
+                sucesores_analizados += 1
                 h = heuristica(sucesor)
                 sucesores_con_heuristica.append((h, sucesor))
                 print(f"Evaluando sucesor: {sucesor}, Heurística: {h}")
@@ -96,7 +104,8 @@ def resolver_problema_mono_banana_best_first(estado_inicial):
             
             # Mostrar el estado escogido para la siguiente evaluación
             if sucesores_con_heuristica:
-                print(f"Escogiendo sucesor: {sucesores_con_heuristica[0][1]} con heurística: {sucesores_con_heuristica[0][0]}\n")
+                print(f"Escogiendo sucesor: {sucesores_con_heuristica[0][1]} con heurística: {sucesores_con_heuristica[0][0]}")
+                print("----------------------------------------\n")
     
     return None  # No se encontró solución
 

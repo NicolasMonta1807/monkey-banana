@@ -70,23 +70,29 @@ def resolver_problema_mono_banana_bfs(estado_inicial):
     # Conjunto de estados visitados para evitar ciclos
     visitados = set()
 
+    # Contador de sucesores analizados
+    sucesores_analizados = 0
+
     while cola:
         estado_actual, camino = cola.popleft()
 
         # Si ya se alcanzó el objetivo
         if estado_actual[4]:  # estado_actual[3] es tiene_banana
-            sol = camino + [estado_actual]
-            print(f"Solución encontrada: {estado_actual}")
-            return sol
+            print("----------------------------------------")
+            print(f"Sucesores analizados: {sucesores_analizados}")
+            print("----------------------------------------")
+            return camino + [estado_actual]
 
         if estado_actual not in visitados:
             visitados.add(estado_actual)
 
             # Generar sucesores
             for sucesor in obtener_sucesores(estado_actual):
+                sucesores_analizados += 1
                 cola.append((sucesor, camino + [estado_actual]))
+                print("----------------------------------------")
                 print(f"Evaluando sucesor: {sucesor}")
-
+            print("----------------------------------------\n")
     return None
 
 
