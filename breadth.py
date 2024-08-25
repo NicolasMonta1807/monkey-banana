@@ -1,7 +1,8 @@
 from collections import deque
+import time
 
 # Dimensiones de la rejilla
-FILAS, COLUMNAS = 3, 3
+FILAS, COLUMNAS = 5, 5
 
 # Función para generar los estados sucesores
 def obtener_sucesores(estado):
@@ -74,13 +75,15 @@ def resolver_problema_mono_banana_bfs(estado_inicial):
     return None
 
 
-# Estado inicial: (posición del mono, posición de la caja, sobre la caja, tiene la banana)
 # Estado inicial: (posición del mono, posición de la caja, sobre la caja, posición de la banana, tiene la banana)
-estado_inicial = ((0, 0), (0, 1), False, (1, 1), False)
+estado_inicial = ((2, 3), (0, 2), False, (4, 1), False)
+start = time.perf_counter_ns()
 solucion = resolver_problema_mono_banana_bfs(estado_inicial)
+end = time.perf_counter_ns()
 if solucion:
     print("Solución encontrada:\n")
     for paso, estado in enumerate(solucion):
         print(f"Paso {paso}: {estado}")
+    print("Tiempo de ejecución: ", end-start, " ns")
 else:
     print("No se encontró solución")
